@@ -1,0 +1,89 @@
+* {
+  box-sizing: border-box;
+
+}
+
+body {
+  display: flex;
+  justify-content: left;
+  align-items: left;
+  min-height: 100vh;
+  margin: 0;
+  background-color: #B7C68B;
+}
+
+body, .quote-input{
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.container {
+  background-color: #F4F0CB;
+  padding: .5rem;
+  left: 10px;
+  border-radius: .5rem;
+  width: 500px;
+  max-width: 80%;
+}
+
+.timer{
+  color: #685642;
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  font-size: 1.5rem;
+}
+
+.wpm{
+  color: #685642;
+  position: absolute;
+  right: 5px;
+  top: calc(5px + 1.8rem);
+  font-size:1.5rem;
+}
+
+.quote-display{
+  color: #685642;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  margin-left: calc(1rem + 2px);
+  margin-right: calc(1rem + 2px);
+}
+
+.quote-input{
+  font-size: 1rem;
+  background-color: transparent;
+  border: 2px solid #B3A580;
+  outline: none;
+  width: 100%;
+  height: 8rem;
+  margin: auto;
+  resize: none;
+  padding: .5rem 1rem;
+  border-radius: .5rem;
+}
+
+.quote-input:focus{
+  border-color: #DED29E;
+
+}
+
+.correct{
+  color: #00AA52;
+}
+
+.incorrect{
+  color: #E10D3F;
+  text-decoration: underline;
+}
+
+.boxed{
+  top: 30%;
+  left: 30%;
+  position: absolute; 
+  visibility: hidden;
+  background-color:#F5F4E9;
+
+  text-align: center;
+  border: 20px solid #F5F4E9;
+  border-radius: .5rem;
+}
