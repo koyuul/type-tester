@@ -1,8 +1,9 @@
-const RANDOM_QUOTE_API_URL = 'http://api.quotable.io/random?minLength=40' // api to grab random quotes
+const RANDOM_QUOTE_API_URL = 'https://type.fit/api/quotes' // api to grab random quotes
 const quoteDisplayElement = document.getElementById('quoteDisplay') // the name used to display quoteDisplay
 const quoteInputElement = document.getElementById('quoteInput') //name used to display quoteInput
 const timerElement = document.getElementById('timer') //name used to display timer
 const wpmElement = document.getElementById('wpm');
+const swpmElement = document.getElementById('swpm')
 
 start();
 
@@ -29,7 +30,7 @@ async function start(){//renders new quote
   totalTime=0;
   charsRight=0;
 
-  wpmElement.innerHTML = '0 WPM'
+  wpmElement.innerHTML = '0 wpm'
   timerElement.innerHTML = '0:00'
 
   quoteDisplayElement.innerHTML = ''//empties quote display
@@ -46,8 +47,9 @@ function getRandomQuote(){
   return fetch(RANDOM_QUOTE_API_URL)//get data from API
     .then(response => response.json())
     .then( function(data){
-      quote = data.content; //self explanatory
-      author = data.author;
+      let i = Math.floor(Math.random() * 1643)
+      quote = data[i].text; //self explanatory
+      author = data[i].author ? data[i].author : "an unknown human";
     })
     
 }
@@ -96,6 +98,7 @@ quoteInputElement.addEventListener('input', () => { //every time u type somethin
     started=false;
     document.getElementById("quoteInput").blur(); //deselect text
     completedPopUp();
+    sessionWPM();
   }                          
 })
 //#endregion
@@ -104,6 +107,7 @@ quoteInputElement.addEventListener('input', () => { //every time u type somethin
 const popUpElement = document.getElementById("popUp")
 function completedPopUp(){
   popUpElement.style.visibility = "visible"  
+  
   popUpElement.innerHTML = 
   `Your typing speed is ${wpm} WPM!<br> 
   You just typed a quote by ${author}.<br>
@@ -154,4 +158,13 @@ function calculateWPM(){ //calculate wpm - dont calc errors bcuz they cant anywa
   wpm=Math.round((charsRight/5)/totalTime);
   wpmElement.innerHTML = wpm + " wpm";
 }
+
+let totalWords = swpm = 0, completions = 0;
+function sessionWPM(){
+  completions++;
+  totalWords += wpm;
+  swpm = Math.floor(totalWords/completions);
+  swpmElement.innerHTML = swpm + "swpm";
+}
+
 //#endregion

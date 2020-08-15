@@ -1,0 +1,29 @@
+html{
+    background-color: #B7C68B;
+}
+
+body{
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+#top{
+    display: flex;
+    flex-direction: row;
+}
+
+img{
+    max-width: 64px;
+    max-height: 64px;
+}
+
+h1{
+    font-size: 48px;
+    color: #685642;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.line-break{
+    min-width:100%;
+    border: 3px solid #685642;
+}
