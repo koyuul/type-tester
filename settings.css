@@ -23,7 +23,28 @@ h1{
     margin-bottom: 0;
 }
 
+h4{
+    margin-bottom: 1em;
+    font-size: 16px;
+}
+
 .line-break{
     min-width:100%;
     border: 3px solid #685642;
 }
+
+#theme_select{
+    display: flex;
+    flex-direction: column;
+}
+
+#theme_select_wrapper{
+    display: flex;
+    flex-direction: column;
+    width: 500px;
+}
+
+#preview{
+    height: 201px;
+    width: 500px;
+  }

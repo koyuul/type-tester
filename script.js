@@ -1,11 +1,83 @@
-const RANDOM_QUOTE_API_URL = 'https://type.fit/api/quotes' // api to grab random quotes
-const quoteDisplayElement = document.getElementById('quoteDisplay') // the name used to display quoteDisplay
-const quoteInputElement = document.getElementById('quoteInput') //name used to display quoteInput
-const timerElement = document.getElementById('timer') //name used to display timer
+const RANDOM_QUOTE_API_URL = 'https://type.fit/api/quotes'; // api to grab random quotes
+const quoteDisplayElement = document.getElementById('quoteDisplay'); // the name used to display quoteDisplay
+const quoteInputElement = document.getElementById('quoteInput'); //name used to display quoteInput
+const timerElement = document.getElementById('timer'); //name used to display timer
 const wpmElement = document.getElementById('wpm');
-const swpmElement = document.getElementById('swpm')
+const swpmElement = document.getElementById('swpm');
+const settingsElement = document.getElementById('more');
+const popUpElement = document.getElementById("popUp")
 
-start();
+
+/*
+
+upon return: change color settings, make preset themes
+*/
+
+changed = chrome.storage.sync.get(['tt_checked'], (result) => {
+  if(Object.keys(result).length === 0 && result.constructor === Object){
+    chrome.storage.sync.set({"tt_checked": 0})
+  }
+
+ //if they pressed check
+  if (result.tt_checked === 0){
+    quoteInputElement.blur()
+    let counter = 5;
+    let handler = function(event){
+      counter--;
+      popUpElement.innerHTML = 
+      `There's been a new update! With it, comes the ability to choose themes, and a skip prompt shortcut! 
+      Click on 'settings/more' on the bottom right to check it out! 
+      <br><br>Press Enter ⏎ ${counter} times to continue`
+      if (counter === 0){
+        popUpElement.style.visibility = "hidden"
+        chrome.storage.sync.set({"tt_checked": 1})
+        start();
+      }
+    }
+
+    document.addEventListener("keydown", handler)
+    
+    popUpElement.style.visibility = "visible"
+    popUpElement.innerHTML = 
+    `There's been a new update! With it, comes the ability to choose themes, and a skip prompt shortcut! 
+    Click on 'settings/more' on the bottom right to check it out! 
+    <br><br>Press Enter ⏎ 5 times to continue`
+  } else { //start
+    start();
+  }
+})
+
+chrome.storage.sync.get(null, function(items){
+  let allKeys = Object.keys(items);
+  let allVals = Object.values(items)
+  console.log(allKeys, allVals)
+});
+
+chrome.storage.sync.get(['tt_colorScheme'], (result) => {
+  if(Object.keys(result).length === 0 && result.constructor == Object){
+    chrome.storage.sync.set({
+      'tt_colorScheme': ['#B7C68B', '#F4F0CB', '#685642', '#B3A580', //bg, fg, accnt, brdr-acc
+                        '#DED29E', '#F5F4E9', '#00AA52', '#E10D3F', '#685642'] // brdr-inac, txt-bg, cor-txt, incor-txt
+    })
+  }
+  color_codes = [result['tt_colorScheme'][0], result['tt_colorScheme'][1], result['tt_colorScheme'][2],
+                result['tt_colorScheme'][3], result['tt_colorScheme'][4], result['tt_colorScheme'][5],
+                result['tt_colorScheme'][6], result['tt_colorScheme'][7], result['tt_colorScheme'][8],
+                result['tt_colorScheme'][9] ]
+  document.body.style.setProperty('--main-bg', color_codes[0])
+  document.body.style.setProperty('--main-fg', color_codes[1])
+  document.body.style.setProperty('--accent', color_codes[2])
+  document.body.style.setProperty('--border-active', color_codes[3])
+  document.body.style.setProperty('--border-inactive', color_codes[4])
+  document.body.style.setProperty('--text-bg', color_codes[5])
+  document.body.style.setProperty('--correct-txt', color_codes[6])
+  document.body.style.setProperty('--incorrect-txt', color_codes[7])
+  document.body.style.setProperty('--main-txt', color_codes[8])
+  document.body.style.setProperty('--quote-txt', color_codes[9])
+})
+
+
+
 
 
 //QUOTE STUFF
@@ -13,15 +85,13 @@ let started = false;
 let charsRight = 0;// (chars right for char count)
 let characterSpan, character;
 
-
-
 let characterCounted, ripQuote;
 async function start(){//renders new quote
   await getRandomQuote();//load quote from API
   quoteInputElement.focus();
   characterCounted= new Array(quote.length).fill(false); //make an array, with defalt vals false (for checking)
   ripQuote = quote; //ripQuote for quote to be used outside 
-  popUpElement.style.visibility = "hidden"
+  
   //reset vars for next run
   wpm=0;
   seconds=0;
@@ -32,6 +102,7 @@ async function start(){//renders new quote
 
   wpmElement.innerHTML = '0 wpm'
   timerElement.innerHTML = '0:00'
+  clearInterval(timer)
 
   quoteDisplayElement.innerHTML = ''//empties quote display
   quote.split('').forEach(character => { //apply this code to eachchar
@@ -55,14 +126,24 @@ function getRandomQuote(){
 }
 
 //#region every input
+
+// ctrl+enter shortcut
 let currentCharacter, globalChar, checkChar;
+quoteInputElement.addEventListener('keydown', (key) => { 
+  if (key.ctrlKey && key.key == "Enter"){
+    start();
+  }
+})
+
 quoteInputElement.addEventListener('input', () => { //every time u type something, goes through this to check if right
   const arrayQuote = quoteDisplayElement.querySelectorAll('span') //all spans in one
   const arrayValue = quoteInputElement.value.split('') //splits input into arrays
   
+  
+
   if (started != true) { //start if it already hasnt
     started = true;
-    startRecording(); //starts timer and wpm, should probs be named startRecording but whatever
+    startRecording(); //starts timer and wpm
   }
 
   let correct = true; //start out with all values good
@@ -93,6 +174,7 @@ quoteInputElement.addEventListener('input', () => { //every time u type somethin
     characterCounted[currentCharacter]=true;
   }
 
+
   if (correct){//if whole thing is right
     clearInterval(timer);
     started=false;
@@ -104,7 +186,7 @@ quoteInputElement.addEventListener('input', () => { //every time u type somethin
 //#endregion
 
 //#region completed text prompt
-const popUpElement = document.getElementById("popUp")
+
 function completedPopUp(){
   popUpElement.style.visibility = "visible"  
   
@@ -117,6 +199,7 @@ function completedPopUp(){
   let handler = function(event) { //if enter key
     if (event.keyCode == 13) {
         console.log('L')
+        popUpElement.style.visibility = "hidden"
         start();
         document.body.removeEventListener("keydown", handler)
     }
@@ -153,8 +236,10 @@ function stopWatch(){ //display time in min:sec
 //#endregion
 
 //#region wpm
+
 let wpm;
 function calculateWPM(){ //calculate wpm - dont calc errors bcuz they cant anyway
+  console.log('am i here')
   wpm=Math.round((charsRight/5)/totalTime);
   wpmElement.innerHTML = wpm + " wpm";
 }
@@ -164,7 +249,8 @@ function sessionWPM(){
   completions++;
   totalWords += wpm;
   swpm = Math.floor(totalWords/completions);
-  swpmElement.innerHTML = swpm + "swpm";
+  swpmElement.innerHTML = swpm + " swpm";
 }
 
 //#endregion
+
