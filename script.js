@@ -6,20 +6,40 @@ const wpmElement = document.getElementById('wpm');
 const swpmElement = document.getElementById('swpm');
 const settingsElement = document.getElementById('more');
 const popUpElement = document.getElementById("popUp")
+localStorage = window.localStorage;
 
-
+console.log(localStorage)
 /*
-
 upon return: change color settings, make preset themes
 */
+checked = localStorage.getItem("tt_checked")
+if (checked === null){
+  localStorage.setItem("tt_checked", 0)
+  
+  quoteInputElement.blur()
+  let counter = 5;
 
-changed = chrome.storage.sync.get(['tt_checked'], (result) => {
-  if(Object.keys(result).length === 0 && result.constructor === Object){
-    chrome.storage.sync.set({"tt_checked": 0})
-  }
-
- //if they pressed check
-  if (result.tt_checked === 0){
+  document.addEventListener("keydown", function(){
+    counter--;
+    popUpElement.innerHTML = 
+    `There's been a new update! With it, comes the ability to choose themes, and a skip prompt shortcut! 
+    Click on 'settings/more' on the bottom right to check it out! 
+    <br><br>Press Enter ⏎ ${counter} times to continue`
+    if (counter === 0){
+      popUpElement.style.visibility = "hidden"
+      localStorage.setItem("tt_checked", 1)
+      start();
+    }
+  })
+    
+    popUpElement.style.visibility = "visible"
+    popUpElement.innerHTML = 
+    `There's been a new update! With it, comes the ability to choose themes, and a skip prompt shortcut! 
+    Click on 'settings/more' on the bottom right to check it out! 
+    <br><br>Press Enter ⏎ 5 times to continue`
+}
+else{
+  if (checked === 0){
     quoteInputElement.blur()
     let counter = 5;
     let handler = function(event){
@@ -30,7 +50,7 @@ changed = chrome.storage.sync.get(['tt_checked'], (result) => {
       <br><br>Press Enter ⏎ ${counter} times to continue`
       if (counter === 0){
         popUpElement.style.visibility = "hidden"
-        chrome.storage.sync.set({"tt_checked": 1})
+        localStorage.setItem("tt_checked", 1)
         start();
       }
     }
@@ -42,43 +62,43 @@ changed = chrome.storage.sync.get(['tt_checked'], (result) => {
     `There's been a new update! With it, comes the ability to choose themes, and a skip prompt shortcut! 
     Click on 'settings/more' on the bottom right to check it out! 
     <br><br>Press Enter ⏎ 5 times to continue`
-  } else { //start
+  } 
+  else { //start
     start();
   }
-})
-
-chrome.storage.sync.get(null, function(items){
-  let allKeys = Object.keys(items);
-  let allVals = Object.values(items)
-  console.log(allKeys, allVals)
-});
-
-chrome.storage.sync.get(['tt_colorScheme'], (result) => {
-  if(Object.keys(result).length === 0 && result.constructor == Object){
-    chrome.storage.sync.set({
-      'tt_colorScheme': ['#B7C68B', '#F4F0CB', '#685642', '#B3A580', //bg, fg, accnt, brdr-acc
-                        '#DED29E', '#F5F4E9', '#00AA52', '#E10D3F', '#685642'] // brdr-inac, txt-bg, cor-txt, incor-txt
-    })
-  }
-  color_codes = [result['tt_colorScheme'][0], result['tt_colorScheme'][1], result['tt_colorScheme'][2],
-                result['tt_colorScheme'][3], result['tt_colorScheme'][4], result['tt_colorScheme'][5],
-                result['tt_colorScheme'][6], result['tt_colorScheme'][7], result['tt_colorScheme'][8],
-                result['tt_colorScheme'][9] ]
-  document.body.style.setProperty('--main-bg', color_codes[0])
-  document.body.style.setProperty('--main-fg', color_codes[1])
-  document.body.style.setProperty('--accent', color_codes[2])
-  document.body.style.setProperty('--border-active', color_codes[3])
-  document.body.style.setProperty('--border-inactive', color_codes[4])
-  document.body.style.setProperty('--text-bg', color_codes[5])
-  document.body.style.setProperty('--correct-txt', color_codes[6])
-  document.body.style.setProperty('--incorrect-txt', color_codes[7])
-  document.body.style.setProperty('--main-txt', color_codes[8])
-  document.body.style.setProperty('--quote-txt', color_codes[9])
-})
+}
 
 
 
+result = localStorage.getItem('tt_colorScheme')
+color_scheme =  ['#B7C68B', '#F4F0CB', '#685642', '#B3A580',
+'#DED29E', '#F5F4E9', '#00AA52', '#E10D3F', '#685642']
 
+if (result === null){
+  localStorage.setItem('tt_colorScheme', JSON.stringify(color_scheme))
+  
+  color_codes = ['#B7C68B', '#F4F0CB', '#685642', '#B3A580',
+  '#DED29E', '#F5F4E9', '#00AA52', '#E10D3F', '#685642']
+}
+else {
+  result = JSON.parse(result)
+  color_codes = [result[0], result[1], result[2],
+                  result[3], result[4], result[5],
+                  result[6], result[7], result[8],
+                  result[9] ]
+}
+
+console.log(color_codes[0])
+document.body.style.setProperty('--main-bg', color_codes[0])
+document.body.style.setProperty('--main-fg', color_codes[1])
+document.body.style.setProperty('--accent', color_codes[2])
+document.body.style.setProperty('--border-active', color_codes[3])
+document.body.style.setProperty('--border-inactive', color_codes[4])
+document.body.style.setProperty('--text-bg', color_codes[5])
+document.body.style.setProperty('--correct-txt', color_codes[6])
+document.body.style.setProperty('--incorrect-txt', color_codes[7])
+document.body.style.setProperty('--main-txt', color_codes[8])
+document.body.style.setProperty('--quote-txt', color_codes[9])
 
 //QUOTE STUFF
 let started = false;
