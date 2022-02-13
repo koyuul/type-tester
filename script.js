@@ -8,37 +8,36 @@ const settingsElement = document.getElementById('more');
 const popUpElement = document.getElementById("popUp")
 localStorage = window.localStorage;
 
-console.log(localStorage)
 /*
-upon return: change color settings, make preset themes
+  checked for new users is: null
+  checked for all users is: 0
 */
-checked = localStorage.getItem("tt_checked")
+let checked = localStorage.getItem("tt_checked")
 if (checked === null){
-  localStorage.setItem("tt_checked", 0)
-  
-  quoteInputElement.blur()
+  localStorage.setItem("tt_checked", 0);
+  quoteInputElement.blur();
   let counter = 5;
+
+  popUpElement.style.visibility = "visible"
+  popUpElement.innerHTML = 
+  `There's been a new update! With it, comes the ability to choose themes, and a skip prompt shortcut! 
+  Click on 'settings/more' on the bottom right to check it out! 
+  <br><br>Press Enter ⏎ 5 times to continue`
 
   document.addEventListener("keydown", function(){
     counter--;
     popUpElement.innerHTML = 
     `There's been a new update! With it, comes the ability to choose themes, and a skip prompt shortcut! 
     Click on 'settings/more' on the bottom right to check it out! 
-    <br><br>Press Enter ⏎ ${counter} times to continue`
+    <br><br>Press Enter ⏎ ${counter} times to continue`;
+
     if (counter === 0){
       popUpElement.style.visibility = "hidden"
       localStorage.setItem("tt_checked", 1)
       start();
     }
   })
-    
-    popUpElement.style.visibility = "visible"
-    popUpElement.innerHTML = 
-    `There's been a new update! With it, comes the ability to choose themes, and a skip prompt shortcut! 
-    Click on 'settings/more' on the bottom right to check it out! 
-    <br><br>Press Enter ⏎ 5 times to continue`
-}
-else{
+} else{
   if (checked === 0){
     quoteInputElement.blur()
     let counter = 5;
@@ -88,7 +87,6 @@ else {
                   result[9] ]
 }
 
-console.log(color_codes[0])
 document.body.style.setProperty('--main-bg', color_codes[0])
 document.body.style.setProperty('--main-fg', color_codes[1])
 document.body.style.setProperty('--accent', color_codes[2])
@@ -100,18 +98,19 @@ document.body.style.setProperty('--incorrect-txt', color_codes[7])
 document.body.style.setProperty('--main-txt', color_codes[8])
 document.body.style.setProperty('--quote-txt', color_codes[9])
 
-//QUOTE STUFF
+//QUOTE STUFF **************************************************************************************************
 let started = false;
 let charsRight = 0;// (chars right for char count)
 let characterSpan, character;
-
 let characterCounted, ripQuote;
+
+
 async function start(){//renders new quote
   await getRandomQuote();//load quote from API
   quoteInputElement.focus();
-  characterCounted= new Array(quote.length).fill(false); //make an array, with defalt vals false (for checking)
-  ripQuote = quote; //ripQuote for quote to be used outside 
-  
+  characterCounted= new Array(quote.length).fill(false); //make an array, with default vals false (for checking)
+  ripQuote = quote; //ripQuote for quote to be used outside  
+
   //reset vars for next run
   wpm=0;
   seconds=0;
@@ -125,13 +124,16 @@ async function start(){//renders new quote
   clearInterval(timer)
 
   quoteDisplayElement.innerHTML = ''//empties quote display
-  quote.split('').forEach(character => { //apply this code to eachchar
-    characterSpan = document.createElement('span')//makes every letter its own span
-    characterSpan.innerText = character //assign letter to span
-    quoteDisplayElement.appendChild(characterSpan) //make it child (prints)
+  quote.split('').forEach(character => { //apply this code to each char
+    if (character === '’' || character === '‘'){ //filter out curly apostrophe
+      character = "'";
+    }
+    characterSpan = document.createElement('span');//makes every letter its own span
+    characterSpan.innerText = character; //assign letter to span
+    quoteDisplayElement.appendChild(characterSpan); //make it child (prints)
   })
-  quoteInputElement.value = null;//input value is null, so it starts new?
-  started=false;//before you type, you havent started
+  quoteInputElement.value = null;//input value is null, so it starts new?;
+  started=false;//before you type, you haven't started;
 }
 
 function getRandomQuote(){
@@ -139,7 +141,7 @@ function getRandomQuote(){
     .then(response => response.json())
     .then( function(data){
       let i = Math.floor(Math.random() * 1643)
-      quote = data[i].text; //self explanatory
+      quote = data[i].text;
       author = data[i].author ? data[i].author : "an unknown human";
     })
     
@@ -158,8 +160,6 @@ quoteInputElement.addEventListener('keydown', (key) => {
 quoteInputElement.addEventListener('input', () => { //every time u type something, goes through this to check if right
   const arrayQuote = quoteDisplayElement.querySelectorAll('span') //all spans in one
   const arrayValue = quoteInputElement.value.split('') //splits input into arrays
-  
-  
 
   if (started != true) { //start if it already hasnt
     started = true;
@@ -168,12 +168,12 @@ quoteInputElement.addEventListener('input', () => { //every time u type somethin
 
   let correct = true; //start out with all values good
   arrayQuote.forEach((characterSpan, index) => { // CHECK all chars
-    character = arrayValue[index] // character is current input char
+    let character = arrayValue[index] // character is current input char
     currentCharacter=arrayValue.length-1 //last character in array, current character
     globalChar = arrayValue[currentCharacter] //character atm
     checkChar = ripQuote[currentCharacter] // character it should be
-    
-    if (character == null) {                               //section hasnt been touched
+
+    if (character == null) {                               //section hasn't been touched
       characterSpan.classList.remove('correct')
       characterSpan.classList.remove('incorrect')
       correct = false // if not done, cant all be done
@@ -189,7 +189,7 @@ quoteInputElement.addEventListener('input', () => { //every time u type somethin
     }
   })
   
-  if (globalChar===checkChar&&characterCounted[currentCharacter]===false){ // chars match
+  if (globalChar === checkChar && characterCounted[currentCharacter]===false){ // chars match
     charsRight++;
     characterCounted[currentCharacter]=true;
   }
@@ -215,10 +215,9 @@ function completedPopUp(){
   You just typed a quote by ${author}.<br>
   Press ⏎ to continue.`
   //reset values
-  // use on blur to actiavet box lololoo
+  // use on blur to activate box 
   let handler = function(event) { //if enter key
     if (event.keyCode == 13) {
-        console.log('L')
         popUpElement.style.visibility = "hidden"
         start();
         document.body.removeEventListener("keydown", handler)
@@ -240,6 +239,7 @@ function startRecording(){ //every seconds run stopwatch n update wpm
   }, 1000);
 }
 
+
 function stopWatch(){ //display time in min:sec
     if (started){
       seconds++;
@@ -258,9 +258,9 @@ function stopWatch(){ //display time in min:sec
 //#region wpm
 
 let wpm;
-function calculateWPM(){ //calculate wpm - dont calc errors bcuz they cant anyway
-  console.log('am i here')
+function calculateWPM(){ //calculate wpm - dont calc errors because they cant anyway
   wpm=Math.round((charsRight/5)/totalTime);
+  console.log(totalTime);
   wpmElement.innerHTML = wpm + " wpm";
 }
 
