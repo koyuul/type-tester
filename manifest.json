@@ -1,7 +1,7 @@
 {
     "name": "Type Tester",
     "version": "1.4.3",
-    "manifest_version": 2,
+    "manifest_version": 3,
 
     "description": "An extension that lets you test your words per minute (WPM), right in your browser!",
     "author": "@koyuul on Twitter, Instagram",
