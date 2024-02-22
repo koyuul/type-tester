@@ -106,7 +106,12 @@ let characterCounted, ripQuote;
 
 
 async function start(){//renders new quote
-  await getRandomQuote();//load quote from API
+  try {
+    await getRandomQuote();//load quote from API
+  } catch {
+    await getOfflineQuote();
+  }
+
   quoteInputElement.focus();
   characterCounted= new Array(quote.length).fill(false); //make an array, with default vals false (for checking)
   ripQuote = quote; //ripQuote for quote to be used outside  
@@ -134,6 +139,16 @@ async function start(){//renders new quote
   })
   quoteInputElement.value = null;//input value is null, so it starts new?;
   started=false;//before you type, you haven't started;
+}
+
+function getOfflineQuote(){
+  return fetch("./quotes.json")
+    .then (response => response.json())
+    .then ( function(data){
+      let i = Math.floor(Math.random() * 148);
+      quote = data["quotes"][i]["quote"];
+      author = data["quotes"][i]["author"];
+    })
 }
 
 function getRandomQuote(){
